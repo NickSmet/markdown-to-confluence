@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+*.sublime-*
+.project
+.settings
+.classpath
+
+# Build and temporary files
+dist/
+build/
+tmp/
+temp/
+*.log
+logs/
+*.tmp
+coverage/
+.nyc_output/
+
+# Project specific files
+page-id-map.json
+docs-fixed-references/
+command_output.txt
+.markdown-confluence.json

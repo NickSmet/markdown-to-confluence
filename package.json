@@ -1,0 +1,77 @@
+{
+  "name": "markdown-to-confluence",
+  "version": "1.0.0",
+  "description": "A simple CLI tool to publish markdown files to Confluence with a single command",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "mtc": "./cli.js"
+  },
+  "files": [
+    "cli.js",
+    "reference-processor.js",
+    "confluence-publisher.js",
+    "cli-executor.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node cli.js",
+    "debug": "node --inspect-brk cli.js",
+    "debug:verbose": "DEBUG=* node cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky install"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "markdown",
+    "confluence",
+    "documentation",
+    "cli",
+    "markdown-to-confluence",
+    "confluence-markup"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NickSmet/markdown-confluence"
+  },
+  "dependencies": {
+    "@atlaskit/adf-schema": "^46.1.0",
+    "@atlaskit/adf-utils": "^19.14.1",
+    "@atlaskit/editor-json-transformer": "^8.21.1",
+    "@markdown-confluence/cli": "github:NickSmet/markdown-confluence",
+    "debug": "^4.3.4",
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3",
+    "inquirer": "^8.2.5",
+    "js-yaml": "^4.1.0",
+    "yaml": "^2.7.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/prosemirror-markdown": "^1.9.0",
+    "@types/prosemirror-model": "^1.17.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}

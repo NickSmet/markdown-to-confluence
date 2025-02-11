@@ -1,0 +1,29 @@
+# Development files
+.git*
+.husky/
+.vscode/
+.idea/
+*.log
+*.swp
+
+# Test files
+test/
+coverage/
+*.test.js
+*.spec.js
+
+# Configuration files
+.eslintrc*
+.prettierrc*
+.editorconfig
+tsconfig.json
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Build artifacts
+dist/
+build/
+*.tgz 

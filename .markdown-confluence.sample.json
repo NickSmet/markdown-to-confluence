@@ -1,0 +1,30 @@
+{
+  "confluenceBaseUrl": "https://yourcompany.atlassian.net",
+  "confluenceParentId": "YOUR_PARENT_ID",
+  "atlassianUserName": "user@example.com",
+  "folderToPublish": ".",
+  "confluenceSpaceKey": "YOUR_SPACE_KEY",
+  "contentRoot": ".",
+  "ignore": ["images", "assets/images"],
+  "mermaid": {
+    "theme": "base",
+    "padding": 5,
+    "themeVariables": {
+      "background": "#181010",
+      "mainBkg": "#ddebff",
+      "primaryColor": "#ddebff",
+      "primaryTextColor": "#192b50",
+      "primaryBorderColor": "#0052cc",
+      "secondaryColor": "#ff8f73",
+      "secondaryTextColor": "#192b50",
+      "secondaryBorderColor": "#df360c",
+      "tertiaryColor": "#c0b6f3",
+      "tertiaryTextColor": "#fefefe",
+      "tertiaryBorderColor": "#5243aa",
+      "noteBkgColor": "#ffc403",
+      "noteTextColor": "#182a4e",
+      "textColor": "#000000",
+      "titleColor": "#0052cc"
+    }
+  }
+}
