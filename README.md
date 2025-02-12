@@ -18,8 +18,8 @@ A simple CLI tool to publish markdown files to Confluence with a single command 
 ## Installation
 
 ```bash
-git clone https://github.com/NickSmet/markdown-confluence
-cd markdown-confluence
+git clone https://github.com/NickSmet/markdown-to-confluence
+cd markdown-to-confluence
 npm install
 npm link
 ```
