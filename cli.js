@@ -5,6 +5,9 @@ const path = require('path');
 const inquirer = require('inquirer');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
+const createLogger = require('./logger');
+
+const logger = createLogger('CLI');
 
 // IMPORTANT: Adjust these requires to match your local filenames
 const { processReferences } = require('./reference-processor');
@@ -30,10 +33,10 @@ function loadConfig(configPath) {
   try {
     if (fs.existsSync(configPath)) {
       config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      console.log('Found local configuration at:', configPath);
+      logger.info('Found local configuration at:', configPath);
     }
   } catch (err) {
-    console.log('Error reading local config:', err.message);
+    logger.error('Error reading local config:', err.message);
   }
 
   // Fill missing values from environment variables
@@ -51,7 +54,7 @@ function loadConfig(configPath) {
       for (const envKey of envKeys) {
         if (process.env[envKey]) {
           config[configKey] = process.env[envKey];
-          console.log(`Found ${configKey} in environment variable ${envKey}`);
+          logger.debug(`Found ${configKey} in environment variable ${envKey}`);
           break;
         }
       }
@@ -71,7 +74,7 @@ async function ensureConfig(configPath) {
   let newConfig = { ...existingConfig };
   
   if (missingKeys.length > 0) {
-    console.log('\nSome required configuration values are missing:');
+    logger.warn('\nSome required configuration values are missing:');
     
     const answers = await inquirer.prompt(
       missingKeys.map(key => ({
@@ -99,15 +102,15 @@ async function ensureConfig(configPath) {
 
     if (confirm) {
       fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2), 'utf8');
-      console.log(`\nSaved configuration at ${configPath}`);
-      console.log('Tip: To avoid entering these values again, you can export them in your shell:');
+      logger.success(`\nSaved configuration at ${configPath}`);
+      logger.info('Tip: To avoid entering these values again, you can export them in your shell:');
       for (const [configKey, envKeys] of Object.entries(envMapping)) {
         if (missingKeys.includes(configKey)) {
-          console.log(`export ${envKeys[0]}="${newConfig[configKey]}"`);
+          logger.info(`export ${envKeys[0]}="${newConfig[configKey]}"`);
         }
       }
     } else {
-      console.log('\nContinuing without saving configuration.');
+      logger.info('\nContinuing without saving configuration.');
     }
   }
 
@@ -136,8 +139,8 @@ async function runCLI() {
     .argv;
 
   const docsFolder = path.resolve(process.cwd(), argv.docsDir);
-  console.log('Welcome to the Markdown-to-Confluence CLI!');
-  console.log(`Working with folder: ${docsFolder}`);
+  logger.info('Welcome to the Markdown-to-Confluence CLI!');
+  logger.info(`Working with folder: ${docsFolder}`);
 
   const configPath = path.join(docsFolder, '.markdown-confluence.json');
   const config = await ensureConfig(configPath);
@@ -147,24 +150,24 @@ async function runCLI() {
   const fixedFolder = path.join(docsFolder, FIXED_REFS_DIR);
 
   try {
-    console.log('\nRunning reference fixing...');
+    logger.info('\nRunning reference fixing...');
     await processReferences(docsFolder);
 
-    console.log('\nPublishing to Confluence...');
+    logger.info('\nPublishing to Confluence...');
     await publishToConfluence(docsFolder);
 
-    console.log('\nAll tasks completed successfully.\n');
+    logger.success('\nAll tasks completed successfully.\n');
   } catch (err) {
-    console.error('CLI Error:', err);
+    logger.error('CLI Error:', err);
     throw err;
   } finally {
     // Always try to clean up the temporary folder
     if (fs.existsSync(fixedFolder)) {
       try {
         fs.rmSync(fixedFolder, { recursive: true, force: true });
-        console.log(`\nCleaned up temporary folder: ${fixedFolder}`);
+        logger.success(`\nCleaned up temporary folder: ${fixedFolder}`);
       } catch (cleanupError) {
-        console.error(`Warning: Failed to clean up temporary folder ${fixedFolder}:`, cleanupError);
+        logger.warn(`Warning: Failed to clean up temporary folder ${fixedFolder}:`, cleanupError);
       }
     }
   }

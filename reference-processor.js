@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const { parseFrontmatter, updateFrontmatter } = require('./frontmatter-utils');
+const createLogger = require('./logger');
+
+const logger = createLogger('References');
 
 /**
  * Dynamically load the config from the provided base folder.
@@ -31,7 +34,7 @@ function copyDir(src, dest, excludePath) {
         const srcPath = path.join(src, entry.name);
         // Exclude the fixed (temp) folder if found inside the source.
         if (excludePath && path.resolve(srcPath) === path.resolve(excludePath)) {
-            console.log(`Excluding temporary folder from copy: ${srcPath}`);
+            logger.debug(`Excluding temporary folder from copy: ${srcPath}`);
             continue;
         }
         const destPath = path.join(dest, entry.name);
@@ -79,7 +82,7 @@ function buildPageIdMap(dir) {
                         pageMap.set(parentDir, frontmatter['connie-page-id']);
                     }
                     
-                    console.log(`Added page ID mapping: ${normalizedPath} -> ${frontmatter['connie-page-id']}`);
+                    logger.debug(`Added page ID mapping: ${normalizedPath} -> ${frontmatter['connie-page-id']}`);
                 }
             }
         }
@@ -103,11 +106,11 @@ function updateOriginalFiles(sourceDir, targetDir) {
             const normalizedPath = normalizePath(relativePath.replace(/\.md$/, ''));
             pageIdMap.set(normalizedPath, pageId);
             spaceKeyMap.set(pageId, spaceKey);
-            console.log(`Found new page ID ${pageId} for ${normalizedPath} in space ${spaceKey}`);
+            logger.debug(`Found new page ID ${pageId} for ${normalizedPath} in space ${spaceKey}`);
         }
     } catch (error) {
         if (error.code !== 'ENOENT') throw error;
-        console.log('No command output file found, using existing page IDs only.');
+        logger.debug('No command output file found, using existing page IDs only.');
     }
 
     function processDir(currentDir, relativePath = '') {
@@ -152,7 +155,7 @@ function updateOriginalFiles(sourceDir, targetDir) {
                 const updatedContent = updateFrontmatter(sourceContent, newFrontmatter);
                 fs.writeFileSync(sourcePath, updatedContent);
 
-                console.log(`Updated frontmatter for ${sourcePath} with page ID ${newFrontmatter['connie-page-id'] || 'NO_ID'}`);
+                logger.debug(`Updated frontmatter for ${sourcePath} with page ID ${newFrontmatter['connie-page-id'] || 'NO_ID'}`);
             }
         }
     }
@@ -185,19 +188,9 @@ function fixReferences(content, pageMap, filePath, spaceKeyMap, config) {
             path.normalize(path.join(baseDir, url)).replace(/\.md$/, '').replace(/\\/g, '/')
         ].map(p => normalizePath(p));
         
-        console.log(`\nProcessing link: ${url}`);
-        console.log('Base directory:', baseDir);
-        console.log('Path variations:');
-        pathVariations.forEach((p, i) => console.log(`${i + 1}. ${p}`));
-        
-        // DEBUG: For each variation, show if it exists in pageMap
-        console.log('\nChecking each variation against pageMap:');
-        pathVariations.forEach((p, i) => {
-            console.log(`${i + 1}. ${p} -> ${pageMap.has(p) ? 'Found!' : 'Not found'}`);
-            if (pageMap.has(p)) {
-                console.log(`   ID: ${pageMap.get(p)}`);
-            }
-        });
+        logger.debug(`\nProcessing link: ${url}`);
+        logger.debug('Base directory:', baseDir);
+        logger.debug('Path variations:', pathVariations);
         
         let pageId = null;
         let fullPath = null;
@@ -206,7 +199,7 @@ function fixReferences(content, pageMap, filePath, spaceKeyMap, config) {
             if (pageMap.has(p)) {
                 pageId = pageMap.get(p);
                 fullPath = p;
-                console.log(`Found page ID ${pageId} for path: ${p}`);
+                logger.debug(`Found page ID ${pageId} for path: ${p}`);
                 break;
             }
         }
@@ -216,7 +209,7 @@ function fixReferences(content, pageMap, filePath, spaceKeyMap, config) {
             const confluenceUrl = `${config.confluenceBaseUrl}/wiki/spaces/${spaceKey}/pages/${pageId}`;
             return `[${text}](${confluenceUrl})`;
         } else {
-            console.log(`No page ID found for any variation of: ${url}`);
+            logger.debug(`No page ID found for any variation of: ${url}`);
             return match;
         }
     });
@@ -239,20 +232,20 @@ async function processReferences(baseFolder = process.cwd()) {
     const sourceDir = folderToPublish;
     const targetDir = path.resolve(folderToPublish, FIXED_REFS_DIR);
 
-    console.log(`Copying source directory from: ${sourceDir}`);
-    console.log(`Target fixed references directory (temporary folder): ${targetDir}`);
+    logger.info(`Copying source directory from: ${sourceDir}`);
+    logger.info(`Target fixed references directory (temporary folder): ${targetDir}`);
     copyDir(sourceDir, targetDir, targetDir);
 
-    console.log('Building page ID map...');
+    logger.info('Building page ID map...');
     const pageMap = buildPageIdMap(targetDir);
-    console.log('\nPage ID mappings:');
+    logger.debug('\nPage ID mappings:');
     for (const [p, id] of pageMap.entries()) {
-        console.log(`${p} -> ${id}`);
+        logger.debug(`${p} -> ${id}`);
     }
 
     // Update the files in the temporary folder with the new page ID frontmatter,
     // so the updated title is also picked up on publish.
-    console.log('\nUpdating page IDs (and frontmatter) in temporary files...');
+    logger.info('\nUpdating page IDs (and frontmatter) in temporary files...');
     // Notice we now use targetDir for both parameters so that the temp files get updated.
     const { pageIdMap, spaceKeyMap } = updateOriginalFiles(targetDir, targetDir);
 
@@ -263,7 +256,7 @@ async function processReferences(baseFolder = process.cwd()) {
         }
     }
 
-    console.log('\nFixing references in temporary files...');
+    logger.info('\nFixing references in temporary files...');
     function processMarkdownFiles(dir) {
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const entry of entries) {
@@ -271,7 +264,7 @@ async function processReferences(baseFolder = process.cwd()) {
             if (entry.isDirectory()) {
                 processMarkdownFiles(fullPath);
             } else if (entry.name.endsWith('.md')) {
-                console.log(`\nProcessing ${fullPath}...`);
+                logger.debug(`\nProcessing ${fullPath}...`);
                 // Compute the file path relative to targetDir for lookup.
                 const relativeFilePath = path.relative(targetDir, fullPath);
                 const fixedContent = fixReferences(
@@ -287,13 +280,13 @@ async function processReferences(baseFolder = process.cwd()) {
     }
 
     processMarkdownFiles(targetDir);
-    console.log('\nReference processing complete.');
+    logger.success('\nReference processing complete.');
 }
 
 // When running directly, execute processReferences() with process.cwd() as base.
 if (require.main === module) {
     processReferences().catch(error => {
-        console.error('Error:', error);
+        logger.error('Error:', error);
         process.exit(1);
     });
 }

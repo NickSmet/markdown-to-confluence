@@ -1,6 +1,6 @@
 # Markdown to Confluence (MTC)
 
-A simple CLI tool to publish markdown files to Confluence with a single command while maintaining proper internal references and structure. This project is based on a minor fork of [markdown-confluence](https://github.com/markdown-confluence/markdown-confluence) to remove heavy image compression and add custom styling for mermaid diagrams with some additional tricks to translate local md references to correct Confluence page links.
+A simple CLI tool to publish markdown files to Confluence with a single command while maintaining proper internal references and structure. This project is based on a minor fork of [markdown-confluence](https://github.com/markdown-confluence/markdown-confluence) to remove heavy image compression and add custom styling for mermaid diagrams with some additional logic to translate local md references to correct Confluence page links.
 
 ![MTC](./assets/images/mtc.png)
 
