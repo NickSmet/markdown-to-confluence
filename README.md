@@ -10,6 +10,11 @@ A simple CLI tool to publish markdown files to Confluence with a single command 
 - Maintains folder structure and internal references
 - Correctly inserts images 
 
+## Prerequisites
+
+- [Node.js](https://nodejs.org/)
+- Git
+
 ## Installation
 
 ```bash
