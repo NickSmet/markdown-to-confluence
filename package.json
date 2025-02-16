@@ -1,8 +1,9 @@
 {
   "name": "markdown-to-confluence-publisher",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A simple CLI tool to publish markdown files to Confluence with a single command",
   "type": "module",
+  "preferGlobal": true,
   "publishConfig": {
     "access": "public"
   },

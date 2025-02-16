@@ -18,7 +18,7 @@ A simple CLI tool to publish markdown files to Confluence with a single command 
 
 ## Installation
 
-You can install MTC either via npm or from source.
+You can install MTC either via npm or from source. Note that this is a CLI tool that needs to be installed globally to be accessible from anywhere in your system.
 
 ### Option 1: Install via npm (recommended)
 
@@ -26,7 +26,7 @@ You can install MTC either via npm or from source.
 npm install -g markdown-to-confluence-publisher
 ```
 
-This will install the `mtc` command globally on your system.
+The `-g` flag is required as this will install the `mtc` command globally on your system, making it available from any directory.
 
 ### Option 2: Install from source
 
@@ -34,7 +34,7 @@ This will install the `mtc` command globally on your system.
 git clone https://github.com/NickSmet/markdown-to-confluence-publisher
 cd markdown-to-confluence-publisher
 npm install
-npm link
+npm link  # This makes the mtc command available globally
 ```
 
 Both methods will make the `mtc` command available globally on your system.
