@@ -1,4 +1,4 @@
-# Markdown to Confluence (MTC)
+# Markdown to Confluence Publisher (mtc)
 
 A simple CLI tool to publish markdown files to Confluence with a single command while maintaining proper internal references and structure. This project is based on a minor fork of [markdown-confluence](https://github.com/markdown-confluence/markdown-confluence) to remove heavy image compression and add custom styling for mermaid diagrams with some additional logic to translate local md references to correct Confluence page links.
 
@@ -13,17 +13,31 @@ A simple CLI tool to publish markdown files to Confluence with a single command 
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/)
-- Git
+- [Node.js](https://nodejs.org/) >= 16.0.0
+- Git (if installing from source)
 
 ## Installation
 
+You can install MTC either via npm or from source.
+
+### Option 1: Install via npm (recommended)
+
 ```bash
-git clone https://github.com/NickSmet/markdown-to-confluence
-cd markdown-to-confluence
+npm install -g markdown-to-confluence-publisher
+```
+
+This will install the `mtc` command globally on your system.
+
+### Option 2: Install from source
+
+```bash
+git clone https://github.com/NickSmet/markdown-to-confluence-publisher
+cd markdown-to-confluence-publisher
 npm install
 npm link
 ```
+
+Both methods will make the `mtc` command available globally on your system.
 
 ## Usage
 
