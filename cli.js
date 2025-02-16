@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const inquirer = require('inquirer');
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
-const createLogger = require('./logger');
+import fs from 'fs';
+import path from 'path';
+import inquirer from 'inquirer';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import createLogger from './logger.js';
+import { processReferences } from './reference-processor.js';
+import publishToConfluence from './confluence-publisher.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const logger = createLogger('CLI');
-
-// IMPORTANT: Adjust these requires to match your local filenames
-const { processReferences } = require('./reference-processor');
-const publishToConfluence = require('./confluence-publisher');
 
 const REQUIRED_CONFIG_KEYS = [
   'confluenceBaseUrl',
@@ -20,6 +23,15 @@ const REQUIRED_CONFIG_KEYS = [
   'atlassianUserName',
   'atlassianApiToken'
 ];
+
+// Define envMapping at the module level
+const envMapping = {
+  confluenceBaseUrl: ['CONFLUENCE_BASE_URL', 'CONNIE_BASE_URL'],
+  atlassianUserName: ['ATLASSIAN_USER_NAME', 'CONNIE_USER'],
+  confluenceSpaceKey: ['CONFLUENCE_SPACE_KEY', 'CONNIE_SPACE'],
+  confluenceParentId: ['CONFLUENCE_PARENT_ID', 'CONNIE_PARENT'],
+  atlassianApiToken: ['CONFLUENCE_API_TOKEN', 'CONNIE_API_TOKEN']
+};
 
 /**
  * Load configuration following the hierarchy:
@@ -41,14 +53,6 @@ function loadConfig(configPath) {
   }
 
   // Fill missing values from environment variables
-  const envMapping = {
-    confluenceBaseUrl: ['CONFLUENCE_BASE_URL', 'CONNIE_BASE_URL'],
-    atlassianUserName: ['ATLASSIAN_USER_NAME', 'CONNIE_USER'],
-    confluenceSpaceKey: ['CONFLUENCE_SPACE_KEY', 'CONNIE_SPACE'],
-    confluenceParentId: ['CONFLUENCE_PARENT_ID', 'CONNIE_PARENT'],
-    atlassianApiToken: ['CONFLUENCE_API_TOKEN', 'CONNIE_API_TOKEN']
-  };
-
   logger.debug('Environment variable mapping:', JSON.stringify(envMapping, null, 2));
   logger.debug('Current process.env keys:', Object.keys(process.env).filter(key => 
     Object.values(envMapping).flat().includes(key)
@@ -157,7 +161,7 @@ async function runCLI() {
   logger.info(`Working with folder: ${docsFolder}`);
 
   const configPath = path.join(docsFolder, '.markdown-confluence.json');
-  const config = await ensureConfig(configPath);
+  await ensureConfig(configPath);
 
   // Hard-coded fixed references directory
   const FIXED_REFS_DIR = 'docs-fixed-references';
@@ -171,9 +175,9 @@ async function runCLI() {
     await publishToConfluence(docsFolder);
 
     logger.success('\nAll tasks completed successfully.\n');
-  } catch (err) {
-    logger.error('CLI Error:', err);
-    throw err;
+  } catch (error) {
+    logger.error('CLI Error:', error);
+    throw error;
   } finally {
     // Always try to clean up the temporary folder
     if (fs.existsSync(fixedFolder)) {
@@ -187,6 +191,6 @@ async function runCLI() {
   }
 }
 
-runCLI().catch((err) => {
+runCLI().catch((error) => {
   process.exit(1);
 });

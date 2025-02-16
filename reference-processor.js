@@ -1,7 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-const { parseFrontmatter, updateFrontmatter } = require('./frontmatter-utils');
-const createLogger = require('./logger');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { parseFrontmatter, updateFrontmatter } from './frontmatter-utils.js';
+import createLogger from './logger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const logger = createLogger('References');
 
@@ -99,7 +104,7 @@ function updateOriginalFiles(sourceDir, targetDir) {
     
     try {
         const commandOutput = fs.readFileSync('command_output.txt', 'utf8');
-        const urlRegex = /SUCCESS: (.+?) Content: .+?Page URL: https:\/\/coreljira\.atlassian\.net\/wiki\/spaces\/([^\/]+)\/pages\/(\d+)/g;
+        const urlRegex = /SUCCESS: (.+?) Content: .+?Page URL: https:\/\/coreljira\.atlassian\.net\/wiki\/spaces\/([^/]+)\/pages\/(\d+)/g;
         let match;
         while ((match = urlRegex.exec(commandOutput)) !== null) {
             const [_, relativePath, spaceKey, pageId] = match;
@@ -284,14 +289,14 @@ async function processReferences(baseFolder = process.cwd()) {
 }
 
 // When running directly, execute processReferences() with process.cwd() as base.
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
     processReferences().catch(error => {
         logger.error('Error:', error);
         process.exit(1);
     });
 }
 
-module.exports = {
+export {
     processReferences,
     parseFrontmatter,
     updateFrontmatter,

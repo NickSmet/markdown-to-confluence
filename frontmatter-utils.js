@@ -1,4 +1,4 @@
-const matter = require('gray-matter');
+import matter from 'gray-matter';
 
 /**
  * Parses a markdown file content to separate frontmatter data and body.
@@ -28,7 +28,7 @@ function updateFrontmatter(content, newData) {
   return matter.stringify(body, mergedData);
 }
 
-module.exports = {
+export {
   parseFrontmatter,
   updateFrontmatter
 }; 

@@ -1,15 +1,20 @@
-const fs = require('fs');
-const { execSync } = require('child_process');
-const path = require('path');
-const { processReferences, parseFrontmatter, updateFrontmatter } = require('./reference-processor');
-const createLogger = require('./logger');
+import fs from 'fs';
+import { execSync } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { processReferences, parseFrontmatter, updateFrontmatter } from './reference-processor.js';
+import createLogger from './logger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const logger = createLogger('Publisher');
 
 // Function to update page IDs in original files
 function updatePageIds(docsFolder, output) {
     logger.info('Starting updatePageIds for folder:', docsFolder);
-    const urlRegex = /SUCCESS: (.+?) Content: .+?Page URL: https:\/\/coreljira\.atlassian\.net\/wiki\/spaces\/([^\/]+)\/pages\/(\d+)/g;
+    const urlRegex = /SUCCESS: (.+?) Content: .+?Page URL: https:\/\/coreljira\.atlassian\.net\/wiki\/spaces\/([^/]+)\/pages\/(\d+)/g;
     const pageIdMap = new Map();
     const spaceKeyMap = new Map();
     let hasNewIds = false;
@@ -247,4 +252,4 @@ async function publishToConfluence(docsFolder = '.') {
     }
 }
 
-module.exports = publishToConfluence;
+export default publishToConfluence;
