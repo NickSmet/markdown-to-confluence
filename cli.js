@@ -34,6 +34,7 @@ function loadConfig(configPath) {
     if (fs.existsSync(configPath)) {
       config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       logger.info('Found local configuration at:', configPath);
+      logger.debug('Initial config from file:', JSON.stringify(config, null, 2));
     }
   } catch (err) {
     logger.error('Error reading local config:', err.message);
@@ -48,28 +49,41 @@ function loadConfig(configPath) {
     atlassianApiToken: ['CONFLUENCE_API_TOKEN', 'CONNIE_API_TOKEN']
   };
 
-  // Check shell environment variables
+  logger.debug('Environment variable mapping:', JSON.stringify(envMapping, null, 2));
+  logger.debug('Current process.env keys:', Object.keys(process.env).filter(key => 
+    Object.values(envMapping).flat().includes(key)
+  ));
+
+  // Check shell environment variables for any missing or undefined config values
   for (const [configKey, envKeys] of Object.entries(envMapping)) {
-    if (!config[configKey]) {
+    logger.debug(`Checking config key: ${configKey}, current value:`, config[configKey]);
+    if (!config[configKey] || config[configKey] === undefined) {
       for (const envKey of envKeys) {
         if (process.env[envKey]) {
           config[configKey] = process.env[envKey];
-          logger.debug(`Found ${configKey} in environment variable ${envKey}`);
+          logger.debug(`Set ${configKey} from env var ${envKey}: ${process.env[envKey]}`);
           break;
+        } else {
+          logger.debug(`Environment variable ${envKey} not found`);
         }
       }
+    } else {
+      logger.debug(`Using existing value for ${configKey} from config file`);
     }
   }
 
+  logger.debug('Final config after merging env vars:', JSON.stringify(config, null, 2));
   return config;
 }
 
 async function ensureConfig(configPath) {
   // First load existing configuration
+  logger.info('Loading configuration...');
   const existingConfig = loadConfig(configPath);
   
   // Check if any required values are missing
   const missingKeys = REQUIRED_CONFIG_KEYS.filter(key => !existingConfig[key]);
+  logger.debug('Missing required keys:', missingKeys);
   
   let newConfig = { ...existingConfig };
   

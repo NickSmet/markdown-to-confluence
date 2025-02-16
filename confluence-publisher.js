@@ -118,6 +118,43 @@ async function publishToConfluence(docsFolder = '.') {
         // Set contentRoot to the temp folder where the files with fixed references are stored
         logger.debug(`Setting temporary content root folder to: ${fixedFolder}`);
         config.contentRoot = fixedFolder;
+
+        // Handle environment variables according to best practices
+        const envVars = {
+            // Credentials (from env vars or fallback to config)
+            atlassianApiToken: process.env.CONFLUENCE_API_TOKEN || process.env.CONNIE_API_TOKEN || config.atlassianApiToken,
+            atlassianUserName: process.env.ATLASSIAN_USER_NAME || process.env.CONNIE_USER || config.atlassianUserName,
+            
+            // Optional overrides for team-wide settings
+            confluenceBaseUrl: process.env.CONFLUENCE_BASE_URL || process.env.CONNIE_BASE_URL || config.confluenceBaseUrl,
+            confluenceSpaceKey: process.env.CONFLUENCE_SPACE_KEY || process.env.CONNIE_SPACE || config.confluenceSpaceKey,
+            confluenceParentId: process.env.CONFLUENCE_PARENT_ID || process.env.CONNIE_PARENT || config.confluenceParentId
+        };
+
+        // Validate required credentials
+        if (!envVars.atlassianApiToken) {
+            throw new Error('Atlassian API token is required. Set CONFLUENCE_API_TOKEN/CONNIE_API_TOKEN in your environment or atlassianApiToken in .markdown-confluence.json');
+        }
+        if (!envVars.atlassianUserName) {
+            throw new Error('Atlassian username is required. Set ATLASSIAN_USER_NAME/CONNIE_USER in your environment or atlassianUserName in .markdown-confluence.json');
+        }
+
+        // Log configuration source for transparency
+        if (process.env.CONFLUENCE_API_TOKEN || process.env.CONNIE_API_TOKEN) {
+            logger.debug('Using API token from environment variable');
+        } else if (config.atlassianApiToken) {
+            logger.debug('Using API token from config file (not recommended for security)');
+        }
+
+        if (process.env.ATLASSIAN_USER_NAME || process.env.CONNIE_USER) {
+            logger.debug('Using username from environment variable');
+        } else if (config.atlassianUserName) {
+            logger.debug('Using username from config file');
+        }
+
+        // Update config with environment variables
+        Object.assign(config, envVars);
+        
         fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
         // Check if the fixed folder exists
