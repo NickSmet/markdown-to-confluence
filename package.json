@@ -1,6 +1,6 @@
 {
   "name": "markdown-to-confluence-publisher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple CLI tool to publish markdown files to Confluence with a single command",
   "type": "module",
   "publishConfig": {
@@ -45,7 +45,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NickSmet/markdown-confluence"
+    "url": "https://github.com/NickSmet/markdown-to-confluence-publisher"
   },
   "dependencies": {
     "@markdown-confluence/cli": "github:NickSmet/markdown-confluence",

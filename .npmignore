@@ -1,12 +1,14 @@
 # Development files
-.git*
-.husky/
+.git/
+.gitignore
 .vscode/
 .idea/
+.DS_Store
 *.log
 *.swp
 
 # Test files
+__tests__/
 test/
 coverage/
 *.test.js
@@ -16,14 +18,24 @@ coverage/
 .eslintrc*
 .prettierrc*
 .editorconfig
-tsconfig.json
+.markdown-confluence.json
 
 # Documentation
 docs/
-*.md
-!README.md
+examples/
+CONTRIBUTING.md
+CHANGELOG.md
 
-# Build artifacts
+# Build files
 dist/
 build/
-*.tgz 
+*.tgz
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment files
+.env*
+.env.local
+.env.*.local 
