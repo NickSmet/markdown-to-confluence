@@ -144,11 +144,9 @@ Usage in markdown:
 ```
 
 
-### Updating pages
+### Frontmatter Management
 
-To push changes after having edited/added pages, simply run the command again. 
-
-Note that to track relations between md files and pages, the tool adds frontmatter to the md files with 'connie-page-id' being the most important one.
+To track relations between md files and pages, the tool adds frontmatter to the md files with 'connie-page-id' being the most important one.
 
 Initially, pages are created with title being the name of the md file. But you can change this by updating the 'connie-title' field in the frontmatter.
 ![connie-title](./assets/images/connie-title.png)
