@@ -1,6 +1,6 @@
 {
   "name": "markdown-to-confluence-publisher",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "A simple CLI tool to publish markdown files to Confluence with a single command",
   "type": "module",
   "publishConfig": {
@@ -25,9 +25,10 @@
     "debug": "node --inspect-brk cli.js",
     "debug:verbose": "DEBUG=* node cli.js",
     "test": "jest --passWithNoTests",
-    "lint": "eslint .",
+    "lint": "./node_modules/.bin/eslint .",
     "format": "prettier --write .",
-    "prepare": "husky install",
+    "postinstall": "[ -n \"$CI\" ] || [ -n \"$INIT_CWD\" ] || husky install",
+    "prepare": "exit 0",
     "prepublishOnly": "npm run lint && npm test"
   },
   "engines": {
@@ -48,7 +49,7 @@
     "url": "https://github.com/NickSmet/markdown-to-confluence-publisher"
   },
   "dependencies": {
-    "@markdown-confluence/cli": "github:NickSmet/markdown-confluence",
+    "@markdown-confluence/cli": "github:NickSmet/markdown-confluence#main",
     "chalk": "^5.4.1",
     "debug": "^4.3.4",
     "glob": "^11.0.0",
