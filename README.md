@@ -19,7 +19,7 @@ A simple CLI tool to publish markdown files to Confluence with a single command 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 16.0.0
-- Git (if installing from source)
+- [Git](https://git-scm.com/downloads)
 
 ## Installation
 

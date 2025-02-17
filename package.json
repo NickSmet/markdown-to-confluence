@@ -1,6 +1,6 @@
 {
   "name": "markdown-to-confluence-publisher",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A simple CLI tool to publish markdown files to Confluence with a single command",
   "type": "module",
   "preferGlobal": true,
@@ -28,8 +28,6 @@
     "test": "jest --passWithNoTests",
     "lint": "./node_modules/.bin/eslint .",
     "format": "prettier --write .",
-    "postinstall": "[ -n \"$CI\" ] || [ -n \"$INIT_CWD\" ] || husky install",
-    "prepare": "exit 0",
     "prepublishOnly": "npm run lint && npm test"
   },
   "engines": {
@@ -64,7 +62,6 @@
     "@eslint/js": "^9.20.0",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
-    "husky": "^9.0.0",
     "jest": "^29.7.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.5.1"
